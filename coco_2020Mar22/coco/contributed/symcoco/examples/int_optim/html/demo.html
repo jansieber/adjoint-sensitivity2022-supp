@@ -1,0 +1,483 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Test symcoco for demo of constrained optimization along a family of periodic orbits</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-03-01"><meta name="DC.source" content="demo.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Test symcoco for demo of constrained optimization along a family of periodic orbits</h1><!--introduction--><p>(Copied from <tt>coco_folder/po/examples/int_optim</tt>.) See that folder and PO-Tutorial.pdf for details about the demo. This file shows in its first parts how one can use symbolic derivatives of up to second order for coco computations. The demo uses the method of successive continuation to look for stationary values of an integral functional along a family of periodic orbits of a modified Van-der-Pol oscillator.</p><p>This demo defines the ODE and the derivatives of its right-hand side in the main demo. The objective functional and its derivatives are defined inside <a href="int_init_data.html">int_init_data.html</a>, where they are part of the the definition of the integral type objective functional.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Load path to symcoco routines</a></li><li><a href="#2">Shortcut vdP for defining  right-hand side and its derivatives</a></li><li><a href="#3">Initial encoding</a></li><li><a href="#4">Start continuation of periodic orbits from the Hopf bifurcation</a></li><li><a href="#5">Switch to branch of nontrivial multipliers</a></li><li><a href="#6">Constrain nontrivial multiplier and release additional continuation parameters</a></li><li><a href="#7">Constrain nontrivial multiplier and release additional continuation parameters</a></li><li><a href="#8">Remove path to symcoco</a></li></ul></div><h2 id="1">Load path to symcoco routines</h2><p>(only <tt>sco_gen</tt> needed here)</p><pre class="codeinput">clear
+addpath([pwd(),<span class="string">'/../../toolbox'</span>]);
+</pre><h2 id="2">Shortcut vdP for defining  right-hand side and its derivatives</h2><p>See the definition of <tt>funcs</tt> in the first line of the part below, how <tt>vdP</tt> can be used to define functions and derivatives.</p><pre class="codeinput">vdP=sco_gen(@sym_mvdP);
+</pre><h2 id="3">Initial encoding</h2><p>Construct equilibrium point zero problem. The definition of <tt>funcs</tt> uses the handle <tt>vdP</tt> to define all 0th, 1st and 2nd-order derivatives of the right-hand side of the ODE. After this definition the demo is identical to the original demo for the PO-toolbox.</p><pre class="codeinput">funcs  = {vdP(<span class="string">''</span>),vdP(<span class="string">'x'</span>),vdP(<span class="string">'p'</span>),vdP({<span class="string">'x'</span>,<span class="string">'x'</span>}),vdP({<span class="string">'x'</span>,<span class="string">'p'</span>}),vdP({<span class="string">'p'</span>,<span class="string">'p'</span>})};
+x0     = [0;0;0];
+pnames = {<span class="string">'p1'</span>, <span class="string">'p2'</span>, <span class="string">'p3'</span>, <span class="string">'p4'</span>};
+p0     =  [0.5; 4; 0; 2];
+
+prob = coco_prob();
+prob = ode_isol2ep(prob, <span class="string">''</span>, funcs{:}, x0, pnames, p0);
+
+fprintf(<span class="string">'\n Run=''%s'': Continue family of equilibrium points.\n'</span>, <span class="keyword">...</span>
+  <span class="string">'ep_run'</span>);
+
+bd1  = coco(prob, <span class="string">'ep_run'</span>, [], 1, <span class="string">'p3'</span>, [0 1]);
+</pre><pre class="codeoutput">
+ Run='ep_run': Continue family of equilibrium points.
+
+    STEP   DAMPING               NORMS              COMPUTATION TIMES
+  IT SIT     GAMMA     ||d||     ||f||     ||U||   F(x)  DF(x)  SOLVE
+   0                          0.00e+00  4.50e+00    0.0    0.0    0.0
+
+ STEP      TIME        ||U||  LABEL  TYPE            p3
+    0  00:00:00   4.5000e+00      1  EP      0.0000e+00
+    9  00:00:01   5.0521e+00      2  HB      9.3756e-01
+   10  00:00:01   5.0952e+00      3          9.9162e-01
+   11  00:00:01   5.1017e+00      4  EP      1.0000e+00
+</pre><h2 id="4">Start continuation of periodic orbits from the Hopf bifurcation</h2><pre class="codeinput">HBlab = coco_bd_labs(bd1, <span class="string">'HB'</span>);
+
+prob = coco_prob();
+prob = coco_set(prob, <span class="string">'coll'</span>, <span class="string">'NTST'</span>, 20);
+prob = coco_set(prob, <span class="string">'cont'</span>, <span class="string">'NAdapt'</span>, 1, <span class="string">'PtMX'</span>, [0 100]);
+prob = coco_set(prob, <span class="string">'po'</span>, <span class="string">'bifus'</span>, false);
+
+<span class="comment">% periodic orbit problem with adjoint</span>
+prob = ode_HB2po(prob, <span class="string">''</span>, <span class="string">'ep_run'</span>, HBlab);
+prob = adjt_isol2po(prob, <span class="string">''</span>);
+
+<span class="comment">% integral functional with adjoint</span>
+[fdata, uidx] = coco_get_func_data(prob, <span class="string">'po.orb.coll'</span>, <span class="string">'data'</span>, <span class="string">'uidx'</span>);
+data = int_init_data(fdata, <span class="string">'po.orb'</span>);
+maps = data.coll_seg.maps;
+uidx = uidx([maps.xbp_idx; maps.T_idx]);
+prob = coco_add_func(prob, <span class="string">'po.orb.int'</span>, @int, @int_du, data, <span class="keyword">...</span>
+  <span class="string">'inactive'</span>, <span class="string">'po.orb.int'</span>, <span class="string">'uidx'</span>, uidx, <span class="string">'remesh'</span>, @int_remesh);
+
+[fdata, axidx] = coco_get_adjt_data(prob, <span class="string">'po.orb.coll'</span>, <span class="string">'data'</span>, <span class="string">'axidx'</span>);
+data = adjt_int_init_data(fdata, <span class="string">'po.orb'</span>);
+opt  = data.coll_opt;
+aidx = axidx([opt.xcn_idx; opt.T_idx]);
+prob = coco_add_adjt(prob, <span class="string">'po.orb.int'</span>, @adjt_int, @adjt_int_du, data, <span class="keyword">...</span>
+    <span class="string">'d.po.orb.int'</span>, <span class="string">'aidx'</span>, aidx, <span class="string">'remesh'</span>, @adjt_int_remesh);
+
+fprintf(<span class="keyword">...</span>
+  <span class="string">'\n Run=''%s'': Continue periodic orbits from point %d in run ''%s''.\n'</span>, <span class="keyword">...</span>
+  <span class="string">'po_run'</span>, HBlab, <span class="string">'ep_run'</span>);
+@ghan_dxdx;
+cont_args = {1, {<span class="string">'po.orb.int'</span>, <span class="string">'p3'</span>, <span class="string">'d.p1'</span>, <span class="string">'d.p2'</span>, <span class="string">'d.p4'</span>, <span class="keyword">...</span>
+  <span class="string">'d.po.orb.int'</span>}};
+bd2  = coco(prob, <span class="string">'po_run'</span>, [], cont_args{:});
+</pre><pre class="codeoutput">
+ Run='po_run': Continue periodic orbits from point 2 in run 'ep_run'.
+
+    STEP   DAMPING               NORMS              COMPUTATION TIMES
+  IT SIT     GAMMA     ||d||     ||f||     ||U||   F(x)  DF(x)  SOLVE
+   0                          4.78e-06  2.04e+01    0.0    0.0    0.0
+   1   1  1.00e+00  1.49e-05  2.90e-12  2.04e+01    0.1    0.1    0.0
+   2   1  1.00e+00  8.32e-11  6.03e-15  2.04e+01    0.1    0.2    0.0
+
+ STEP      TIME        ||U||  LABEL  TYPE    po.orb.int           p3         d.p1         d.p2         d.p4 d.po.orb.int
+    0  00:00:01   2.0445e+01      1  EP      1.5585e+00   9.3756e-01   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00
+   10  00:00:06   1.6939e+01      2          1.8145e+00   9.3032e-01   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00
+   20  00:00:11   1.8885e+01      3          2.9921e+00   9.2203e-01   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00
+   30  00:00:15   1.9410e+01      4          4.1955e+00   9.2310e-01   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00
+   40  00:00:20   2.1701e+01      5          4.7713e+00   9.2519e-01   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00
+   50  00:00:24   2.4108e+01      6          4.9695e+00   9.2721e-01   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00
+   56  00:00:29   2.8113e+01      7  BP      4.9927e+00   9.2803e-01   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00
+   56  00:00:29   2.8113e+01      8  FP      4.9927e+00   9.2803e-01   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00
+   60  00:00:32   2.9449e+01      9          4.9676e+00   9.2850e-01   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00
+   70  00:00:38   3.1840e+01     10          4.7293e+00   9.2621e-01   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00
+   80  00:00:44   3.1744e+01     11          4.3524e+00   9.1244e-01   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00
+   90  00:00:51   3.3269e+01     12          3.7283e+00   8.6256e-01   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00
+  100  00:00:58   3.2813e+01     13  EP      3.0927e+00   7.8435e-01   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00
+</pre><h2 id="5">Switch to branch of nontrivial multipliers</h2><pre class="codeinput">BPlab = coco_bd_labs(bd2, <span class="string">'BP'</span>);
+
+prob = coco_prob();
+prob = coco_set(prob, <span class="string">'cont'</span>, <span class="string">'NAdapt'</span>, 1);
+prob = coco_set(prob, <span class="string">'po'</span>, <span class="string">'bifus'</span>, false);
+
+<span class="comment">% periodic orbit problem with adjoint</span>
+prob = ode_BP2po(prob, <span class="string">''</span>, <span class="string">'po_run'</span>, BPlab);
+prob = adjt_BP2po(prob, <span class="string">''</span>, <span class="string">'po_run'</span>, BPlab);
+
+<span class="comment">% integral functional with adjoint</span>
+[fdata, uidx] = coco_get_func_data(prob, <span class="string">'po.orb.coll'</span>, <span class="string">'data'</span>, <span class="string">'uidx'</span>);
+data = int_init_data(fdata, <span class="string">'po.orb'</span>);
+maps = data.coll_seg.maps;
+uidx = uidx([maps.xbp_idx; maps.T_idx]);
+prob = coco_add_func(prob, <span class="string">'po.orb.int'</span>, @int, @int_du, data, <span class="keyword">...</span>
+  <span class="string">'inactive'</span>, <span class="string">'po.orb.int'</span>, <span class="string">'uidx'</span>, uidx, <span class="string">'remesh'</span>, @int_remesh);
+
+chart = coco_read_solution(<span class="string">'po_run'</span>, BPlab, <span class="string">'chart'</span>);
+cdata = coco_get_chart_data(chart, <span class="string">'lsol'</span>);
+[chart, lidx] = coco_read_adjoint(<span class="string">'po.orb.int'</span>, <span class="string">'po_run'</span>, BPlab, <span class="keyword">...</span>
+  <span class="string">'chart'</span>, <span class="string">'lidx'</span>);
+
+[fdata, axidx] = coco_get_adjt_data(prob, <span class="string">'po.orb.coll'</span>, <span class="string">'data'</span>, <span class="string">'axidx'</span>);
+data = adjt_int_init_data(fdata, <span class="string">'po.orb'</span>);
+opt  = data.coll_opt;
+aidx = axidx([opt.xcn_idx; opt.T_idx]);
+prob = coco_add_adjt(prob, <span class="string">'po.orb.int'</span>, @adjt_int, @adjt_int_du, data, <span class="keyword">...</span>
+  <span class="string">'d.po.orb.int'</span>, <span class="string">'aidx'</span>, aidx, <span class="string">'remesh'</span>, @adjt_int_remesh, <span class="keyword">...</span>
+  <span class="string">'l0'</span>, chart.x, <span class="string">'tl0'</span>, cdata.v(lidx));
+
+cont_args = {1, {<span class="string">'d.po.orb.int'</span>, <span class="string">'po.orb.int'</span>, <span class="string">'p3'</span>, <span class="string">'d.p1'</span>, <span class="string">'d.p2'</span>, <span class="keyword">...</span>
+  <span class="string">'d.p4'</span>}, [0 1]};
+bd3  = coco(prob, <span class="string">'po_run_lagrange1'</span>, [], cont_args{:});
+</pre><pre class="codeoutput">
+ STEP      TIME        ||U||  LABEL  TYPE  d.po.orb.int   po.orb.int           p3         d.p1         d.p2         d.p4
+    0  00:00:00   2.8113e+01      1  EP      0.0000e+00   4.9927e+00   9.2803e-01   0.0000e+00   0.0000e+00   0.0000e+00
+   10  00:00:03   2.8429e+01      2          2.4240e-01   4.9927e+00   9.2803e-01   1.3897e-01  -1.4683e-02  -3.4264e-01
+   20  00:00:07   2.9576e+01      3          5.3438e-01   4.9927e+00   9.2803e-01   3.0636e-01  -3.2369e-02  -7.5538e-01
+   30  00:00:10   3.1484e+01      4          8.2637e-01   4.9927e+00   9.2803e-01   4.7375e-01  -5.0056e-02  -1.1681e+00
+   36  00:00:12   3.2928e+01      5  EP      1.0000e+00   4.9927e+00   9.2803e-01   5.7329e-01  -6.0574e-02  -1.4136e+00
+</pre><h2 id="6">Constrain nontrivial multiplier and release additional continuation parameters</h2><pre class="codeinput">EPlab = coco_bd_labs(bd3, <span class="string">'EP'</span>);
+
+prob = coco_prob();
+prob = coco_set(prob, <span class="string">'cont'</span>, <span class="string">'NAdapt'</span>, 1, <span class="string">'h_max'</span>, 10);
+prob = coco_set(prob, <span class="string">'po'</span>, <span class="string">'bifus'</span>, false);
+
+<span class="comment">% periodic orbit problem with adjoint</span>
+prob = ode_po2po(prob, <span class="string">''</span>, <span class="string">'po_run_lagrange1'</span>, EPlab(2));
+prob = adjt_po2po(prob, <span class="string">''</span>, <span class="string">'po_run_lagrange1'</span>, EPlab(2));
+
+<span class="comment">% integral functional with adjoint</span>
+[fdata, uidx] = coco_get_func_data(prob, <span class="string">'po.orb.coll'</span>, <span class="string">'data'</span>, <span class="string">'uidx'</span>);
+data = int_init_data(fdata, <span class="string">'po.orb'</span>);
+maps = data.coll_seg.maps;
+uidx = uidx([maps.xbp_idx; maps.T_idx]);
+prob = coco_add_func(prob, <span class="string">'po.orb.int'</span>, @int, @int_du, data, <span class="keyword">...</span>
+  <span class="string">'inactive'</span>, <span class="string">'po.orb.int'</span>, <span class="string">'uidx'</span>, uidx, <span class="string">'remesh'</span>, @int_remesh);
+
+chart = coco_read_adjoint(<span class="string">'po.orb.int'</span>, <span class="string">'po_run_lagrange1'</span>, EPlab(2), <span class="keyword">...</span>
+  <span class="string">'chart'</span>);
+[fdata, axidx] = coco_get_adjt_data(prob, <span class="string">'po.orb.coll'</span>, <span class="string">'data'</span>, <span class="string">'axidx'</span>);
+data = adjt_int_init_data(fdata, <span class="string">'po.orb'</span>);
+opt  = data.coll_opt;
+aidx = axidx([opt.xcn_idx; opt.T_idx]);
+prob = coco_add_adjt(prob, <span class="string">'po.orb.int'</span>, @adjt_int, @adjt_int_du, data, <span class="keyword">...</span>
+  <span class="string">'d.po.orb.int'</span>, <span class="string">'aidx'</span>, aidx, <span class="string">'remesh'</span>, @adjt_int_remesh, <span class="keyword">...</span>
+  <span class="string">'l0'</span>, chart.x);
+
+prob = coco_add_event(prob, <span class="string">'OPT'</span>, <span class="string">'BP'</span>, <span class="string">'d.p2'</span>, <span class="string">'=='</span>, 0);
+
+cont_args = {1, {<span class="string">'d.p2'</span>, <span class="string">'po.orb.int'</span>, <span class="string">'p3'</span>, <span class="string">'d.p1'</span>, <span class="string">'p2'</span>, <span class="string">'d.p4'</span>}};
+bd4  = coco(prob, <span class="string">'po_run_lagrange2'</span>, [], cont_args{:});
+</pre><pre class="codeoutput">
+    STEP   DAMPING               NORMS              COMPUTATION TIMES
+  IT SIT     GAMMA     ||d||     ||f||     ||U||   F(x)  DF(x)  SOLVE
+   0                          5.91e-07  3.32e+01    0.0    0.0    0.0
+
+ STEP      TIME        ||U||  LABEL  TYPE          d.p2   po.orb.int           p3         d.p1           p2         d.p4
+    0  00:00:00   3.3155e+01      1  EP     -6.0574e-02   4.9927e+00   9.2803e-01   5.7329e-01   4.0000e+00  -1.4136e+00
+    1  00:00:01   3.3140e+01      2  FP     -6.0580e-02   4.9911e+00   9.2781e-01   5.7282e-01   3.9730e+00  -1.4155e+00
+   10  00:00:06   3.2659e+01      3         -5.5528e-04   4.9168e+00   9.1609e-01   5.2453e-01   2.2843e+00  -1.5738e+00
+   11  00:00:07   3.2716e+01      4  OPT     0.0000e+00   4.9168e+00   9.1608e-01   5.2420e-01   2.2784e+00  -1.5743e+00
+
+ STEP      TIME        ||U||  LABEL  TYPE          d.p2   po.orb.int           p3         d.p1           p2         d.p4
+    0  00:00:08   3.3155e+01      5  EP     -6.0574e-02   4.9927e+00   9.2803e-01   5.7329e-01   4.0000e+00  -1.4136e+00
+   10  00:00:13   3.5439e+01      6         -3.1167e-02   5.1798e+00   9.5081e-01   6.1404e-01   8.0559e+00  -1.2665e+00
+   20  00:00:18   8.7440e+01      7         -8.7430e-04   5.4393e+00   9.7759e-01   6.5257e-01   5.6588e+01  -1.1585e+00
+   30  00:00:23   1.8348e+02      8         -1.7590e-04   5.4671e+00   9.8021e-01   6.5593e-01   1.2730e+02  -1.1490e+00
+   40  00:00:28   2.8227e+02      9         -7.3044e-05   5.4751e+00   9.8095e-01   6.5687e-01   1.9801e+02  -1.1463e+00
+   50  00:00:33   3.8168e+02     10         -3.9747e-05   5.4789e+00   9.8131e-01   6.5732e-01   2.6872e+02  -1.1450e+00
+   60  00:00:38   4.8134e+02     11         -2.4943e-05   5.4811e+00   9.8152e-01   6.5758e-01   3.3943e+02  -1.1443e+00
+   70  00:00:43   5.8112e+02     12         -1.7097e-05   5.4826e+00   9.8165e-01   6.5775e-01   4.1014e+02  -1.1438e+00
+   80  00:00:48   6.8096e+02     13         -1.2446e-05   5.4836e+00   9.8175e-01   6.5787e-01   4.8085e+02  -1.1434e+00
+   90  00:00:53   7.8084e+02     14         -9.4633e-06   5.4844e+00   9.8182e-01   6.5796e-01   5.5156e+02  -1.1432e+00
+  100  00:00:58   8.8075e+02     15  EP     -7.4372e-06   5.4850e+00   9.8187e-01   6.5803e-01   6.2227e+02  -1.1430e+00
+</pre><h2 id="7">Constrain nontrivial multiplier and release additional continuation parameters</h2><pre class="codeinput">OPTlab = coco_bd_labs(bd4, <span class="string">'OPT'</span>);
+
+prob = coco_prob();
+prob = coco_set(prob, <span class="string">'cont'</span>, <span class="string">'NAdapt'</span>, 1, <span class="string">'h_max'</span>, 10);
+prob = coco_set(prob, <span class="string">'po'</span>, <span class="string">'bifus'</span>, false);
+
+<span class="comment">% periodic orbit problem with adjoint</span>
+prob = ode_po2po(prob, <span class="string">''</span>, <span class="string">'po_run_lagrange2'</span>, OPTlab);
+prob = adjt_po2po(prob, <span class="string">''</span>, <span class="string">'po_run_lagrange2'</span>, OPTlab);
+
+<span class="comment">% integral functional with adjoint</span>
+[fdata, uidx] = coco_get_func_data(prob, <span class="string">'po.orb.coll'</span>, <span class="string">'data'</span>, <span class="string">'uidx'</span>);
+data = int_init_data(fdata, <span class="string">'po.orb'</span>);
+maps = data.coll_seg.maps;
+uidx = uidx([maps.xbp_idx; maps.T_idx]);
+prob = coco_add_func(prob, <span class="string">'po.orb.int'</span>, @int, @int_du, data, <span class="keyword">...</span>
+  <span class="string">'inactive'</span>, <span class="string">'po.orb.int'</span>, <span class="string">'uidx'</span>, uidx, <span class="string">'remesh'</span>, @int_remesh);
+
+chart = coco_read_adjoint(<span class="string">'po.orb.int'</span>, <span class="string">'po_run_lagrange2'</span>, OPTlab, <span class="keyword">...</span>
+  <span class="string">'chart'</span>);
+[fdata, axidx] = coco_get_adjt_data(prob, <span class="string">'po.orb.coll'</span>, <span class="string">'data'</span>, <span class="string">'axidx'</span>);
+data = adjt_int_init_data(fdata, <span class="string">'po.orb'</span>);
+opt  = data.coll_opt;
+aidx = axidx([opt.xcn_idx; opt.T_idx]);
+prob = coco_add_adjt(prob, <span class="string">'po.orb.int'</span>, @adjt_int, @adjt_int_du, data, <span class="keyword">...</span>
+  <span class="string">'d.po.orb.int'</span>, <span class="string">'aidx'</span>, aidx, <span class="string">'remesh'</span>, @adjt_int_remesh, <span class="keyword">...</span>
+  <span class="string">'l0'</span>, chart.x);
+
+prob = coco_add_event(prob, <span class="string">'OPT'</span>, <span class="string">'BP'</span>, <span class="string">'d.p1'</span>, <span class="string">'=='</span>, 0);
+cont_args = {1, {<span class="string">'d.p1'</span>, <span class="string">'po.orb.int'</span>, <span class="string">'p3'</span>, <span class="string">'p1'</span>, <span class="string">'p2'</span>, <span class="string">'d.p4'</span>}};
+bd5  = coco(prob, <span class="string">'po_run_lagrange3'</span>, [], cont_args{:});
+</pre><pre class="codeoutput">
+    STEP   DAMPING               NORMS              COMPUTATION TIMES
+  IT SIT     GAMMA     ||d||     ||f||     ||U||   F(x)  DF(x)  SOLVE
+   0                          5.94e-11  3.27e+01    0.0    0.0    0.0
+
+ STEP      TIME        ||U||  LABEL  TYPE          d.p1   po.orb.int           p3           p1           p2         d.p4
+    0  00:00:00   3.2720e+01      1  EP      5.2420e-01   4.9168e+00   9.1608e-01   5.0000e-01   2.2784e+00  -1.5743e+00
+   10  00:00:05   3.2130e+01      2          3.5423e-01   4.8169e+00   9.0177e-01   7.1693e-01   2.4763e+00  -1.5019e+00
+   17  00:00:10   3.0953e+01      3  OPT     0.0000e+00   4.7740e+00   8.9023e-01   9.5127e-01   2.7508e+00  -1.2172e+00
+
+ STEP      TIME        ||U||  LABEL  TYPE          d.p1   po.orb.int           p3           p1           p2         d.p4
+    0  00:00:10   3.2720e+01      4  EP      5.2420e-01   4.9168e+00   9.1608e-01   5.0000e-01   2.2784e+00  -1.5743e+00
+    2  00:00:11   3.2772e+01      5  FP      5.2482e-01   4.9233e+00   9.1686e-01   4.8766e-01   2.2714e+00  -1.5723e+00
+   10  00:00:16   3.2453e+01      6          4.0157e-01   5.0058e+00   9.2586e-01   3.1721e-01   2.2070e+00  -1.5217e+00
+   18  00:00:22   3.5678e+01      7  OPT     0.0000e+00   5.0407e+00   9.3043e-01   1.7368e-01   2.1183e+00  -1.5205e+00
+</pre><h2 id="8">Remove path to symcoco</h2><pre class="codeinput">rmpath([pwd(),<span class="string">'/../../toolbox'</span>]); <span class="comment">% path of symcoco routines</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Test symcoco for demo of constrained optimization along a family of periodic orbits
+%
+% (Copied from |coco_folder/po/examples/int_optim|.) See that folder and
+% PO-Tutorial.pdf for details about the demo. This file shows in its first
+% parts how one can use symbolic derivatives of up to second order for coco
+% computations. The demo uses the method of successive continuation to look
+% for stationary values of an integral functional along a family of
+% periodic orbits of a modified Van-der-Pol oscillator.
+%
+% This demo defines the ODE and the derivatives of its right-hand side in
+% the main demo. The objective functional and its derivatives are defined
+% inside <int_init_data.html>, where they are part of the the definition of
+% the integral type objective functional.
+%% Load path to symcoco routines
+% (only |sco_gen| needed here)
+clear
+addpath([pwd(),'/../../toolbox']);
+%% Shortcut vdP for defining  right-hand side and its derivatives
+% See the definition of |funcs| in the first line of the part below, how
+% |vdP| can be used to define functions and derivatives.
+vdP=sco_gen(@sym_mvdP);
+%% Initial encoding
+% Construct equilibrium point zero problem. The definition of |funcs| uses
+% the handle |vdP| to define all 0th, 1st and 2nd-order derivatives of the
+% right-hand side of the ODE. After this definition the demo is identical
+% to the original demo for the PO-toolbox.
+funcs  = {vdP(''),vdP('x'),vdP('p'),vdP({'x','x'}),vdP({'x','p'}),vdP({'p','p'})};
+x0     = [0;0;0];
+pnames = {'p1', 'p2', 'p3', 'p4'};
+p0     =  [0.5; 4; 0; 2];
+
+prob = coco_prob();
+prob = ode_isol2ep(prob, '', funcs{:}, x0, pnames, p0);
+
+fprintf('\n Run=''%s'': Continue family of equilibrium points.\n', ...
+  'ep_run');
+
+bd1  = coco(prob, 'ep_run', [], 1, 'p3', [0 1]);
+
+%% Start continuation of periodic orbits from the Hopf bifurcation
+
+HBlab = coco_bd_labs(bd1, 'HB');
+
+prob = coco_prob();
+prob = coco_set(prob, 'coll', 'NTST', 20);
+prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', [0 100]);
+prob = coco_set(prob, 'po', 'bifus', false);
+
+% periodic orbit problem with adjoint
+prob = ode_HB2po(prob, '', 'ep_run', HBlab);
+prob = adjt_isol2po(prob, '');
+
+% integral functional with adjoint
+[fdata, uidx] = coco_get_func_data(prob, 'po.orb.coll', 'data', 'uidx');
+data = int_init_data(fdata, 'po.orb');
+maps = data.coll_seg.maps;
+uidx = uidx([maps.xbp_idx; maps.T_idx]);
+prob = coco_add_func(prob, 'po.orb.int', @int, @int_du, data, ...
+  'inactive', 'po.orb.int', 'uidx', uidx, 'remesh', @int_remesh);
+
+[fdata, axidx] = coco_get_adjt_data(prob, 'po.orb.coll', 'data', 'axidx');
+data = adjt_int_init_data(fdata, 'po.orb');
+opt  = data.coll_opt;
+aidx = axidx([opt.xcn_idx; opt.T_idx]);
+prob = coco_add_adjt(prob, 'po.orb.int', @adjt_int, @adjt_int_du, data, ...
+    'd.po.orb.int', 'aidx', aidx, 'remesh', @adjt_int_remesh);
+
+fprintf(...
+  '\n Run=''%s'': Continue periodic orbits from point %d in run ''%s''.\n', ...
+  'po_run', HBlab, 'ep_run');
+@ghan_dxdx;
+cont_args = {1, {'po.orb.int', 'p3', 'd.p1', 'd.p2', 'd.p4', ...
+  'd.po.orb.int'}};
+bd2  = coco(prob, 'po_run', [], cont_args{:});
+
+%% Switch to branch of nontrivial multipliers
+
+BPlab = coco_bd_labs(bd2, 'BP');
+
+prob = coco_prob();
+prob = coco_set(prob, 'cont', 'NAdapt', 1);
+prob = coco_set(prob, 'po', 'bifus', false);
+
+% periodic orbit problem with adjoint
+prob = ode_BP2po(prob, '', 'po_run', BPlab);
+prob = adjt_BP2po(prob, '', 'po_run', BPlab);
+
+% integral functional with adjoint
+[fdata, uidx] = coco_get_func_data(prob, 'po.orb.coll', 'data', 'uidx');
+data = int_init_data(fdata, 'po.orb');
+maps = data.coll_seg.maps;
+uidx = uidx([maps.xbp_idx; maps.T_idx]);
+prob = coco_add_func(prob, 'po.orb.int', @int, @int_du, data, ...
+  'inactive', 'po.orb.int', 'uidx', uidx, 'remesh', @int_remesh);
+
+chart = coco_read_solution('po_run', BPlab, 'chart');
+cdata = coco_get_chart_data(chart, 'lsol');
+[chart, lidx] = coco_read_adjoint('po.orb.int', 'po_run', BPlab, ...
+  'chart', 'lidx');
+
+[fdata, axidx] = coco_get_adjt_data(prob, 'po.orb.coll', 'data', 'axidx');
+data = adjt_int_init_data(fdata, 'po.orb');
+opt  = data.coll_opt;
+aidx = axidx([opt.xcn_idx; opt.T_idx]);
+prob = coco_add_adjt(prob, 'po.orb.int', @adjt_int, @adjt_int_du, data, ...
+  'd.po.orb.int', 'aidx', aidx, 'remesh', @adjt_int_remesh, ...
+  'l0', chart.x, 'tl0', cdata.v(lidx));
+
+cont_args = {1, {'d.po.orb.int', 'po.orb.int', 'p3', 'd.p1', 'd.p2', ...
+  'd.p4'}, [0 1]};
+bd3  = coco(prob, 'po_run_lagrange1', [], cont_args{:});
+
+%% Constrain nontrivial multiplier and release additional continuation parameters
+
+EPlab = coco_bd_labs(bd3, 'EP');
+
+prob = coco_prob();
+prob = coco_set(prob, 'cont', 'NAdapt', 1, 'h_max', 10);
+prob = coco_set(prob, 'po', 'bifus', false);
+
+% periodic orbit problem with adjoint
+prob = ode_po2po(prob, '', 'po_run_lagrange1', EPlab(2));
+prob = adjt_po2po(prob, '', 'po_run_lagrange1', EPlab(2));
+
+% integral functional with adjoint
+[fdata, uidx] = coco_get_func_data(prob, 'po.orb.coll', 'data', 'uidx');
+data = int_init_data(fdata, 'po.orb');
+maps = data.coll_seg.maps;
+uidx = uidx([maps.xbp_idx; maps.T_idx]);
+prob = coco_add_func(prob, 'po.orb.int', @int, @int_du, data, ...
+  'inactive', 'po.orb.int', 'uidx', uidx, 'remesh', @int_remesh);
+
+chart = coco_read_adjoint('po.orb.int', 'po_run_lagrange1', EPlab(2), ...
+  'chart');
+[fdata, axidx] = coco_get_adjt_data(prob, 'po.orb.coll', 'data', 'axidx');
+data = adjt_int_init_data(fdata, 'po.orb');
+opt  = data.coll_opt;
+aidx = axidx([opt.xcn_idx; opt.T_idx]);
+prob = coco_add_adjt(prob, 'po.orb.int', @adjt_int, @adjt_int_du, data, ...
+  'd.po.orb.int', 'aidx', aidx, 'remesh', @adjt_int_remesh, ...
+  'l0', chart.x);
+
+prob = coco_add_event(prob, 'OPT', 'BP', 'd.p2', '==', 0);
+
+cont_args = {1, {'d.p2', 'po.orb.int', 'p3', 'd.p1', 'p2', 'd.p4'}};
+bd4  = coco(prob, 'po_run_lagrange2', [], cont_args{:});
+
+%% Constrain nontrivial multiplier and release additional continuation parameters
+
+OPTlab = coco_bd_labs(bd4, 'OPT');
+
+prob = coco_prob();
+prob = coco_set(prob, 'cont', 'NAdapt', 1, 'h_max', 10);
+prob = coco_set(prob, 'po', 'bifus', false);
+
+% periodic orbit problem with adjoint
+prob = ode_po2po(prob, '', 'po_run_lagrange2', OPTlab);
+prob = adjt_po2po(prob, '', 'po_run_lagrange2', OPTlab);
+
+% integral functional with adjoint
+[fdata, uidx] = coco_get_func_data(prob, 'po.orb.coll', 'data', 'uidx');
+data = int_init_data(fdata, 'po.orb');
+maps = data.coll_seg.maps;
+uidx = uidx([maps.xbp_idx; maps.T_idx]);
+prob = coco_add_func(prob, 'po.orb.int', @int, @int_du, data, ...
+  'inactive', 'po.orb.int', 'uidx', uidx, 'remesh', @int_remesh);
+
+chart = coco_read_adjoint('po.orb.int', 'po_run_lagrange2', OPTlab, ...
+  'chart');
+[fdata, axidx] = coco_get_adjt_data(prob, 'po.orb.coll', 'data', 'axidx');
+data = adjt_int_init_data(fdata, 'po.orb');
+opt  = data.coll_opt;
+aidx = axidx([opt.xcn_idx; opt.T_idx]);
+prob = coco_add_adjt(prob, 'po.orb.int', @adjt_int, @adjt_int_du, data, ...
+  'd.po.orb.int', 'aidx', aidx, 'remesh', @adjt_int_remesh, ...
+  'l0', chart.x);
+
+prob = coco_add_event(prob, 'OPT', 'BP', 'd.p1', '==', 0);
+cont_args = {1, {'d.p1', 'po.orb.int', 'p3', 'p1', 'p2', 'd.p4'}};
+bd5  = coco(prob, 'po_run_lagrange3', [], cont_args{:});
+
+%% Remove path to symcoco
+rmpath([pwd(),'/../../toolbox']); % path of symcoco routines
+
+##### SOURCE END #####
+--></body></html>

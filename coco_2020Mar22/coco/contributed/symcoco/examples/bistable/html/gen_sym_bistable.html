@@ -1,0 +1,146 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Symbolic differentiation with coco demo bistable - Generation of right-hand side</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-03-01"><meta name="DC.source" content="gen_sym_bistable.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Symbolic differentiation with coco demo bistable - Generation of right-hand side</h1><!--introduction--><p>This file generates the right-hand side and (by default) its first two derivatives for the periodically forced Duffing oscillator with hardening nonlinearity (see coco demo bistable).  See also <a href="demo.html">demo.html</a> for follow-up demo. Consider the Duffing oscillator</p><p><img src="gen_sym_bistable_eq10796039726505834546.png" alt="$$&#xA;  \frac{\mathrm{d}}{\mathrm{d} t}\vec{x}=\vec{f}(t,\vec{x},\vec{p})&#xA;$$"></p><p>where</p><p><img src="gen_sym_bistable_eq11826213949390484103.png" alt="$$&#xA; \vec{x}=&#xA;  \left[\begin{array}{c}&#xA;    x\\ v&#xA;  \end{array}\right],\quad&#xA;  \vec{p}=\left[&#xA;  \begin{array}{c}&#xA;    T\\ a\\ \gamma&#xA;  \end{array}\right],\quad&#xA;  \vec{f}=\left[&#xA;  \begin{array}{l}&#xA;    v\\ -\gamma v-x-x^3+a \cos(2 \pi t/T)&#xA;  \end{array}\right]&#xA;$$"></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Load path and package (if octave is used)</a></li><li><a href="#2">Create symbols for time, state, parameters</a></li><li><a href="#3">Generate code: output is side effect, written  to file</a></li><li><a href="#4">Demo for usage of generated functions</a></li></ul></div><h2 id="1">Load path and package (if octave is used)</h2><p>The generation of right-hand sides is octave compatible. If octave is used, one may need to load the package <tt>symbolic</tt></p><pre class="codeinput">clear
+addpath([pwd(),<span class="string">'/../../toolbox'</span>]); <span class="comment">% path of symcoco routines</span>
+<span class="keyword">if</span> sco_isoctave()
+    pkg <span class="string">load</span> <span class="string">symbolic</span>   <span class="comment">% if octave is used load package symbolic</span>
+<span class="keyword">end</span>
+</pre><h2 id="2">Create symbols for time, state, parameters</h2><p>Below are the standard way of declaring symbols and defining a symbolic expression <tt>f</tt> using Matlab's symbolic toolbox.</p><pre class="codeinput">syms <span class="string">t</span> <span class="string">x</span> <span class="string">v</span> <span class="string">gam</span> <span class="string">a</span> <span class="string">T</span>
+f=[v; -gam*v-x-x^3+a*cos(2*pi*t/T)];
+</pre><h2 id="3">Generate code: output is side effect, written  to file</h2><p>The call to function <tt>sco_sym2funcs</tt> below takes the symbolic expression <tt>f</tt> of size <tt>2x1</tt> as the argument that will be converted into a function. It computes (by default) its first two derivatives and saves it into a Matlab function that can be called later by <tt>coco</tt>. The second and third input of <tt>sco_sym2funcs</tt> define the generated function as a function of 3 arguments. The second input defines the dimension and symbols of these inputs, the third assigns names (in this case <tt>'t'</tt>, <tt>'x'</tt> and <tt>'p'</tt> such that this call generates a function <tt>f(t,x,p)</tt>, where <tt>x</tt> is the <tt>2x1</tt> vector <tt>[x;v]</tt> from the symbolic expression and <tt>p</tt> is the <tt>3x1</tt> vector <tt>[T;a;gam]</tt> (such that <tt>p(1)=T, p(2)=a, p(3)=gam</tt>). All other inputs of <tt>sco_sym2funcs</tt> are optional name-value pairs. Optional input <tt>'filename'</tt> determines which file the result is written into.</p><pre class="codeinput">sco_sym2funcs(f,<span class="keyword">...</span><span class="comment">             % symbolic expression for f</span>
+    {t,[x;v],[T;a;gam]},<span class="keyword">...</span><span class="comment">     % which symbols are in which inputs of f</span>
+    {<span class="string">'t'</span>,<span class="string">'x'</span>,<span class="string">'p'</span>},<span class="keyword">...</span><span class="comment">           % names for inputs of f</span>
+    <span class="string">'vector'</span>,[0,1,1],<span class="keyword">...</span><span class="comment">        % are inputs scalar or vectors (default: vectors)</span>
+    <span class="string">'filename'</span>,<span class="string">'sym_bistable'</span>); <span class="comment">% filename for result</span>
+rmpath([pwd(),<span class="string">'/../../toolbox'</span>]); <span class="comment">% path of symcoco routines</span>
+</pre><h2 id="4">Demo for usage of generated functions</h2><p>Go to <a href="demo.html">demo.html</a> for follow-up demo.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Symbolic differentiation with coco demo bistable - Generation of right-hand side
+% This file generates the right-hand side and (by default) its first two
+% derivatives for the periodically forced Duffing oscillator with hardening
+% nonlinearity (see coco demo bistable).  See also <demo.html> for
+% follow-up demo. Consider the Duffing oscillator
+%
+% $$
+%   \frac{\mathrm{d}}{\mathrm{d} t}\vec{x}=\vec{f}(t,\vec{x},\vec{p})
+% $$ 
+%
+% where 
+%
+% $$
+%  \vec{x}=
+%   \left[\begin{array}{c}
+%     x\\ v
+%   \end{array}\right],\quad 
+%   \vec{p}=\left[
+%   \begin{array}{c}
+%     T\\ a\\ \gamma
+%   \end{array}\right],\quad
+%   \vec{f}=\left[
+%   \begin{array}{l}
+%     v\\ -\gamma v-x-x^3+a \cos(2 \pi t/T)
+%   \end{array}\right]
+% $$
+%% Load path and package (if octave is used)
+% The generation of right-hand sides is octave compatible. If octave is
+% used, one may need to load the package |symbolic|
+clear
+addpath([pwd(),'/../../toolbox']); % path of symcoco routines
+if sco_isoctave()
+    pkg load symbolic   % if octave is used load package symbolic
+end
+%% Create symbols for time, state, parameters
+% Below are the standard way of declaring symbols and defining a
+% symbolic expression |f| using Matlab's symbolic toolbox.
+syms t x v gam a T 
+f=[v; -gam*v-x-x^3+a*cos(2*pi*t/T)]; 
+%% Generate code: output is side effect, written  to file
+% The call to function |sco_sym2funcs| below takes the symbolic expression
+% |f| of size |2x1| as the argument that will be converted into a function.
+% It computes (by default) its first two derivatives and saves it into a
+% Matlab function that can be called later by |coco|. The second and third
+% input of |sco_sym2funcs| define the generated function as a function of 3
+% arguments. The second input defines the dimension and symbols of these
+% inputs, the third assigns names (in this case |'t'|, |'x'| and |'p'| such
+% that this call generates a function |f(t,x,p)|, where |x| is the |2x1|
+% vector |[x;v]| from the symbolic expression and |p| is the |3x1| vector
+% |[T;a;gam]| (such that |p(1)=T, p(2)=a, p(3)=gam|). All other inputs of
+% |sco_sym2funcs| are optional name-value pairs. Optional input
+% |'filename'| determines which file the result is written into.
+sco_sym2funcs(f,...             % symbolic expression for f
+    {t,[x;v],[T;a;gam]},...     % which symbols are in which inputs of f
+    {'t','x','p'},...           % names for inputs of f
+    'vector',[0,1,1],...        % are inputs scalar or vectors (default: vectors)
+    'filename','sym_bistable'); % filename for result
+rmpath([pwd(),'/../../toolbox']); % path of symcoco routines
+%% Demo for usage of generated functions
+% Go to <demo.html> for follow-up demo.
+##### SOURCE END #####
+--></body></html>
